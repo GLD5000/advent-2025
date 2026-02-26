@@ -1,11 +1,19 @@
-import { challenge1ainput } from "./challenge1Input.js";
-//node challenge-1/challenge1aOutput.js
+import { challenge1input } from "./challenge1Input.js";
+//node challenge-1/challenge1Output.js 1
+//node challenge-1/challenge1Output.js 2
+const part = process.argv[2];
+console.log("part:", part);
+
 function getPassnumber(instructionArray) {
   let passnumber = 0;
   let dialPosition = 50;
   instructionArray.forEach((instruction) => {
     const numberToAdd = Number(instruction.replace("R", "").replace("L", "-"));
-    const [newDialPosition, zeroClicks] = findCurrentPosition(
+    const [newDialPosition, zeroClicks] = part == 1
+          ?findCurrentPositionV1(
+      dialPosition,
+      numberToAdd,
+    ): findCurrentPositionV2(
       dialPosition,
       numberToAdd,
     );
@@ -14,8 +22,25 @@ function getPassnumber(instructionArray) {
   });
   return passnumber;
 }
+function findCurrentPositionV1(dialPosition, numberToAdd) {
+  const remainder = numberToAdd % 100;
+  let zeroClicks = 0;
+  const newPositionRaw = dialPosition + remainder;
+  const isBelowZero = newPositionRaw < 0;
+  const isBelowOne = newPositionRaw < 1;
+  const isAboveNinetyNine = newPositionRaw > 99;
+  // console.log(dialPosition, numberToAdd, zeroClicks);
+  const newPositionLimited = isAboveNinetyNine
+  ? newPositionRaw - 100
+  : isBelowZero
+  ? newPositionRaw + 100
+  : newPositionRaw;
+  
+  if (newPositionLimited === 0) zeroClicks += 1;
+  return [newPositionLimited, zeroClicks];
+}
 
-function findCurrentPosition(dialPosition, numberToAdd) {
+function findCurrentPositionV2(dialPosition, numberToAdd) {
   const remainder = numberToAdd % 100;
   let zeroClicks = Math.floor(Math.abs(numberToAdd - remainder) / 100);
   const newPositionRaw = dialPosition + remainder;
@@ -43,4 +68,4 @@ L1
 L99
 R14
 L82`;
-console.log(getPassnumber(testString.split("\n"))); //6770
+console.log(getPassnumber(challenge1input.split("\n"))); //6770
