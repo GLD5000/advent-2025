@@ -1,4 +1,4 @@
-import { challenge1ainput } from "./challenge1aInput.js";
+import { challenge1ainput } from "./challenge1Input.js";
 //node challenge-1/challenge1aOutput.js
 function getPassnumber(instructionArray) {
   let passnumber = 0;
