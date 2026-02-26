@@ -22,7 +22,8 @@ function findCurrentPosition(dialPosition, numberToAdd) {
   const isBelowZero = newPositionRaw < 0;
   const isBelowOne = newPositionRaw < 1;
   const isAboveNinetyNine = newPositionRaw > 99;
-  if (isBelowOne || isAboveNinetyNine) zeroClicks += 1;
+  if ((isBelowOne || isAboveNinetyNine) && dialPosition !== 0) zeroClicks += 1;
+  // console.log(dialPosition, numberToAdd, zeroClicks);
   const newPositionLimited = isAboveNinetyNine
     ? newPositionRaw - 100
     : isBelowZero
@@ -32,4 +33,14 @@ function findCurrentPosition(dialPosition, numberToAdd) {
   return [newPositionLimited, zeroClicks];
 }
 
-console.log(getPassnumber(challenge1ainput.split("\n")));
+const testString = `L68
+L30
+R48
+L5
+R60
+L55
+L1
+L99
+R14
+L82`;
+console.log(getPassnumber(testString.split("\n"))); //6770
