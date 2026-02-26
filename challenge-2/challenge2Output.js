@@ -79,7 +79,6 @@ function repetitionFinderV1(idString) {
 function repetitionFinderV3(idString) {
   const stringLength = idString.length;
 
-  // Walk through to find match to string position [0] up to half way through
   for (
     let segmentLength = 1;
     segmentLength < stringLength;
