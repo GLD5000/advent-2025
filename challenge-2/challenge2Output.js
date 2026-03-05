@@ -1,20 +1,30 @@
 import { challenge2Input } from "./challenge2input.js";
 // node challenge-2/challenge2Output.js 1
 // node challenge-2/challenge2Output.js 2
+
+// Inline fixtures for quick manual checks while iterating locally.
 const testInput =
   "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,1698522-1698528,446443-446449,38593856-38593862,565653-565659,824824821-824824827,2121212118-2121212124";
 const testInputShort = "11-22";
 
+// Part selector from CLI argument.
 const part = process.argv[2];
 console.log("part:", part);
+
+/**
+ * Expands each numeric range, finds repetitive IDs by selected part rules,
+ * then returns the deduplicated sum of all invalid IDs.
+ */
 function identifyInvalidPids(inputString) {
-  //Invalid patterns
-  // Some sequence of digits repeated twice e.g. 55 or 123123
+  // Invalid pattern: repeated digit sequence (e.g. "55", "123123").
   const idArray = inputString.split(",");
   return idArray.reduce((acc, curr, index, array) => {
+    // Normalize each range so min/max work regardless of order in the input.
     const [a, b] = curr.split("-");
     const min = Math.min(Number(a), Number(b));
     const max = Math.max(Number(a), Number(b));
+
+    // Evaluate every value in the inclusive range.
     for (let i = min; i < max + 1; i += 1) {
       const isRepetitive =
         part == 1
@@ -22,6 +32,8 @@ function identifyInvalidPids(inputString) {
           : repetitionFinderV4(i.toString());
       if (isRepetitive) acc.push(i);
     }
+
+    // After final range: deduplicate and sum all detected invalid IDs.
     if (index === array.length - 1) {
       console.log("acc", acc);
       acc = Array.from(new Set(acc)).reduce(
@@ -33,6 +45,10 @@ function identifyInvalidPids(inputString) {
   }, []);
 }
 
+/**
+ * Part 1 matcher: true only when the string is made of two identical halves.
+ * Examples: "55", "123123".
+ */
 function repetitionFinderV1(idString) {
   const stringLength = idString.length;
   if (stringLength % 2 !== 0) return false;
@@ -82,6 +98,10 @@ function repetitionFinderV1(idString) {
 //   return false;
 // }
 
+/**
+ * Generic repetition checker (alternate approach):
+ * tries all segment lengths and verifies if segment repetition rebuilds input.
+ */
 function repetitionFinderV3(idString) {
   const stringLength = idString.length;
 
@@ -103,6 +123,10 @@ function repetitionFinderV3(idString) {
   return false;
 }
 
+/**
+ * Generic repetition checker used by part 2:
+ * builds a regex from each candidate segment and checks full-string repetition.
+ */
 function repetitionFinderV4(idString) {
   const stringLength = idString.length;
 
@@ -125,4 +149,5 @@ function repetitionFinderV4(idString) {
   return false;
 }
 
+// Run challenge input and print the final invalid PID sum.
 console.log(identifyInvalidPids(challenge2Input));
