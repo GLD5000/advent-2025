@@ -1,16 +1,16 @@
-//node challenge-3/challenge3Output.js test
-//node challenge-3/challenge3Output.js A
-//node challenge-3/challenge3Output.js B
+// node challenge-3/challenge3Output.js test
+// node challenge-3/challenge3Output.js A
+// node challenge-3/challenge3Output.js B
 
 import { challenge3Input } from "./challenge3Input.js";
 
-// Inline sample data for quick local verification.
+// Inline test fixtures for quick manual validation.
 const testInput = `987654321111111
 811111111111119
 234234234234278
 818181911112111`;
 
-// Expected values: "test", "A", "B", "test:B"
+// Part selector from CLI argument.
 const cliArgument = process.argv[2];
 
 /**
