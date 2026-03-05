@@ -1,8 +1,8 @@
 import { challenge1input } from "./challenge1Input.js";
-//node challenge-1/challenge1Output.js 1
-//node challenge-1/challenge1Output.js 2
+// node challenge-1/challenge1Output.js 1
+// node challenge-1/challenge1Output.js 2
 
-// Challenge part selector from CLI.
+// Part selector from CLI argument.
 const part = process.argv[2];
 console.log("part:", part);
 
