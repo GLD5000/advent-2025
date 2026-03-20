@@ -5,7 +5,11 @@
 import { challenge4Input } from "./challenge4Input.js";
 
 // Inline test fixtures for quick manual validation.
-const testInput = `..@@.@@@@.
+const testInput = false
+  ? `..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@`
+  : `..@@.@@@@.
 @@@.@.@.@@
 @@@@@.@.@@
 @.@@@@..@.
@@ -19,90 +23,81 @@ const testInput = `..@@.@@@@.
 // Part selector from CLI argument.
 const cliArgument = process.argv[2];
 
-/**
- * Sums the maximum value extracted from each line in the power bank input.
- * Part A uses a 2-digit extraction strategy, Part B uses an N-digit strategy.
- */
-function totalJoltage(powerBankString, challengePart = "A") {
-  const powerBankArray = powerBankString.split("\n");
-  return powerBankArray.reduce(
-    (acc, curr) => {
+function totalAccessibleRolls(inputString, challengePart = "A") {
+  const inputArray = inputString.split("\n");
+  const radius = challengePart === "A" ? 1 : 1;
+  const maxRollCount = challengePart === "A" ? 4 : 4;
+  return inputArray.reduce(
+    // Outer vertical loop
+    (acc, curr, yIndex) => {
       // Optional debug logging when running test mode.
       cliArgument.indexOf("test") > -1 && console.log("curr:", curr);
-      const max =
-        challengePart === "A"
-          ? findMaxTwoDigitNumber(curr)
-          : findMaxNDigitNumber(curr);
-      cliArgument.indexOf("test") > -1 && console.log("max:", max);
-      acc.valueArray.push(max);
-      acc.runningTotal += max;
+      // Outer horizontal loop
+      acc += getAccessibleRollsInRow(inputArray, yIndex, radius, maxRollCount);
       return acc;
     },
-    { valueArray: [], runningTotal: 0 },
-  ).runningTotal;
+    0,
+  );
+}
+function getAccessibleRollsInRow(inputArray, yIndex, radius, maxRollCount) {
+  let accessibleRolls = 0;
+  // Outer horizontal loop
+  for (let xIndex = 0; xIndex < inputArray[0].length; xIndex += 1) {
+    const numberOfAdjacentRolls = findNumberOfRollsWithinNthRadius(
+      inputArray,
+      xIndex,
+      yIndex,
+      radius,
+      maxRollCount,
+    );
+    if (numberOfAdjacentRolls > -1 && numberOfAdjacentRolls < maxRollCount)
+      accessibleRolls += 1;
+  }
+  return accessibleRolls;
 }
 
-/**
- * Builds the highest possible 2-digit number while preserving original order.
- * The first digit is chosen from the left side, then the second digit is chosen
- * from the remaining suffix.
- */
-function findMaxTwoDigitNumber(inputNumberString) {
-  // Find left value
-  let leftMax = 1;
-  let leftMaxIndex = 0;
-  let leftIndex = 0;
-  for (leftIndex; leftIndex < inputNumberString.length - 1; leftIndex += 1) {
-    const currentDigit = Number(inputNumberString[leftIndex]);
-    if (currentDigit > leftMax) {
-      leftMax = currentDigit;
-      leftMaxIndex = leftIndex;
-    }
-  }
-  // Find right value
-  let rightMax = 1;
-  let rightMaxIndex,
-    rightIndex = leftMaxIndex + 1;
-  for (rightIndex; rightIndex < inputNumberString.length; rightIndex += 1) {
-    const currentDigit = Number(inputNumberString[rightIndex]);
-
-    if (currentDigit > rightMax) {
-      rightMax = currentDigit;
-      rightMaxIndex = rightIndex;
-    }
-  }
-  return Number(`${leftMax}${rightMax}`);
-}
-
-/**
- * Builds the highest possible N-digit number while preserving digit order.
- * Uses a moving left pointer so each chosen digit comes after the previous one.
- */
-function findMaxNDigitNumber(inputNumberString, n = 12) {
-  let digits = "";
-  let leftPointer = 0;
-  for (let digitIndex = 0; digitIndex < n; digitIndex += 1) {
-    let max = 1;
-
-    // Search starts at the next position after the previously selected digit.
-    let index = digitIndex === 0 ? 0 : leftPointer + 1;
-
-    // Keep enough remaining characters to still fill the remaining output digits.
-    const limitIndex = inputNumberString.length - (n - (1 + digitIndex));
-    for (index; index < limitIndex; index += 1) {
-      const currentDigit = Number(inputNumberString[index]);
-      if (currentDigit > max) {
-        max = currentDigit;
-        leftPointer = index;
+function findNumberOfRollsWithinNthRadius(
+  inputArray,
+  xIndex,
+  yIndex,
+  radius = 1,
+  maxRollCount = 4,
+) {
+  let rollCount = 0;
+  if (inputArray[yIndex][xIndex] === ".") return -1;
+  // Inner vertical loop
+  cliArgument.indexOf("test") > -1 &&
+    console.log(
+      Math.min(inputArray.length, yIndex + radius),
+      "Math.min(inputArray.length, yIndex + radius)",
+    );
+  for (
+    let y = Math.max(0, yIndex - radius); // Min 0
+    y < Math.min(inputArray.length, 1 + yIndex + radius); // Max vertical length
+    y += 1
+  ) {
+    if (rollCount >= maxRollCount) break; // Escape loop if maxRollCount is met
+    // Inner horizontal loop
+    for (
+      let x = Math.max(0, xIndex - radius); // Min 0
+      x < Math.min(inputArray[0].length, 1 + xIndex + radius);
+      x += 1
+    ) {
+      if (rollCount >= maxRollCount) break; // Escape loop if maxRollCount is met
+      const isNotCentralCharacter = x !== xIndex || y !== yIndex;
+      if (isNotCentralCharacter && inputArray[y][x] === "@") {
+        rollCount += 1;
       }
+      cliArgument.indexOf("test") > -1 &&
+        console.log("x,y", x, y, "rollCount:", rollCount);
     }
-    digits += max;
   }
-  return Number(digits);
+  return rollCount;
 }
 
 // CLI entry points for each challenge variant.
-if (cliArgument === "test") console.log(totalJoltage(testInput));
-if (cliArgument === "A") console.log(totalJoltage(challenge4Input));
-if (cliArgument === "B") console.log(totalJoltage(challenge4Input, "B"));
-if (cliArgument === "test:B") console.log(totalJoltage(testInput, "B"));
+if (cliArgument === "test") console.log(totalAccessibleRolls(testInput));
+if (cliArgument === "A") console.log(totalAccessibleRolls(challenge4Input));
+if (cliArgument === "B")
+  console.log(totalAccessibleRolls(challenge4Input, "B"));
+if (cliArgument === "test:B") console.log(totalAccessibleRolls(testInput, "B"));
