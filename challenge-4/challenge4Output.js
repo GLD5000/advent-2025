@@ -5,10 +5,16 @@
 import { challenge4Input } from "./challenge4Input.js";
 
 // Inline test fixtures for quick manual validation.
-const testInput = `987654321111111
-811111111111119
-234234234234278
-818181911112111`;
+const testInput = `..@@.@@@@.
+@@@.@.@.@@
+@@@@@.@.@@
+@.@@@@..@.
+@@.@@@@.@@
+.@@@@@@@.@
+.@.@.@.@@@
+@.@@@.@@@@
+.@@@@@@@@.
+@.@.@@@.@.`;
 
 // Part selector from CLI argument.
 const cliArgument = process.argv[2];
