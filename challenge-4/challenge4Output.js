@@ -24,6 +24,9 @@ const testInput = false
 const cliArgument = process.argv[2];
 
 function totalAccessibleRolls(inputString, challengePart = "A") {
+  return getAccessibleRollsInArray(inputString, challengePart);
+}
+function getAccessibleRollsInArray(inputString, challengePart) {
   const inputArray = inputString.split("\n");
   const radius = challengePart === "A" ? 1 : 1;
   const maxRollCount = challengePart === "A" ? 4 : 4;
@@ -36,9 +39,10 @@ function totalAccessibleRolls(inputString, challengePart = "A") {
       acc += getAccessibleRollsInRow(inputArray, yIndex, radius, maxRollCount);
       return acc;
     },
-    0,
+    0
   );
 }
+
 function getAccessibleRollsInRow(inputArray, yIndex, radius, maxRollCount) {
   let accessibleRolls = 0;
   // Outer horizontal loop
